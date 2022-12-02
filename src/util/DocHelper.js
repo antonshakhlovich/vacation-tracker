@@ -25,6 +25,8 @@ export default class DocHelper {
             const md5hash = md5(row.email+process.env.REACT_APP_SALT);
             this.users.push({firstName: row.firstName, lastName: row.lastName, email: row.email, md5: md5hash});
         });
+        this.isReady = true;
+        return;
     }
 
     async getRowsBySheetName(sheetName) {

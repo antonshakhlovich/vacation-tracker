@@ -1,7 +1,7 @@
 import './App.css';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { gapi } from 'gapi-script';
-import {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect} from 'react';
 import logo from './logo-white.svg';
 import DocHelper from './util/DocHelper';
 
@@ -20,10 +20,9 @@ function App(props) {
 
   const [vac, setVac] = useState(states.loading);
   const [profile, setProfile] = useState(null);
-  const docHelper = useMemo (() => new DocHelper(), []);
+  const docHelper = new DocHelper();
 
   useEffect(() => {
-    docHelper.init();
     const initClient = () => {
       gapi.auth2.init({
           clientId: process.env.REACT_APP_OATH_CLIENT_ID,
@@ -31,16 +30,25 @@ function App(props) {
       });
     };
     gapi.load('client:auth2', initClient);
-  }, [docHelper])
+  }, [])
 
   const onSuccess = (res) => {
     setProfile(res.profileObj);
     setVac(states.loading);
-    docHelper.getRowsBySheetName("BalancePublic")
-    .then(rows => {
-      setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? {balance: "No Data"})
-    })
+    updateBalance(res);
   };
+
+  const updateBalance = async (res) => {
+    if(docHelper.isReady) {
+      docHelper.getRowsBySheetName("BalancePublic")
+      .then(rows => {
+        setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? {balance: "No Data"})
+      })
+    } else {
+      await docHelper.init();
+      updateBalance(res);
+    }
+  }
 
   const onFailure = (err) => {
       console.log('failed', err);
