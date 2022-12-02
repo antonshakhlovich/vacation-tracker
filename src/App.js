@@ -1,9 +1,9 @@
 import './App.css';
-import { GoogleSpreadsheet } from "google-spreadsheet";
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { gapi } from 'gapi-script';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import logo from './logo-white.svg';
+import DocHelper from './util/DocHelper';
 
 function App(props) {
   const states = {
@@ -20,41 +20,25 @@ function App(props) {
 
   const [vac, setVac] = useState(states.loading);
   const [profile, setProfile] = useState(null);
-  const {
-    REACT_APP_GOOGLE_SHEET_ID,
-    REACT_APP_GOOGLE_PRIVATE_KEY,
-    REACT_APP_GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    REACT_APP_OATH_CLIENT_ID
-  } = process.env;
-
-  const doc = new GoogleSpreadsheet(REACT_APP_GOOGLE_SHEET_ID);
-
-  async function getRows() {
-    await doc.useServiceAccountAuth({
-      client_email: REACT_APP_GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: REACT_APP_GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n'),
-    });
-    await doc.getInfo();
-    const sheet = doc.sheetsByIndex[0];
-    return sheet.getRows();
-  }
+  const docHelper = useMemo (() => new DocHelper(), []);
 
   useEffect(() => {
+    docHelper.init();
     const initClient = () => {
       gapi.auth2.init({
-          clientId: REACT_APP_OATH_CLIENT_ID,
+          clientId: process.env.REACT_APP_OATH_CLIENT_ID,
           scope: 'email'
       });
     };
     gapi.load('client:auth2', initClient);
-  }, [REACT_APP_OATH_CLIENT_ID])
+  }, [docHelper])
 
   const onSuccess = (res) => {
     setProfile(res.profileObj);
     setVac(states.loading);
-    getRows()
+    docHelper.getRowsBySheetName("BalancePublic")
     .then(rows => {
-      setVac(rows.find(x => x.email === res.profileObj.email) ?? {balance: "No Data"})
+      setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? {balance: "No Data"})
     })
   };
 
@@ -96,11 +80,11 @@ function App(props) {
             <span className="App-label">Vac Used Last Year:</span>
             <span className="App-value">{vac.vacLastYear}</span>
           </p>
-          <GoogleLogout clientId={REACT_APP_OATH_CLIENT_ID} buttonText="Log out" onLogoutSuccess={logOut} />
+          <GoogleLogout clientId={process.env.REACT_APP_OATH_CLIENT_ID} buttonText="Log out" onLogoutSuccess={logOut} />
       </div>
       ) : (
       <GoogleLogin
-          clientId={REACT_APP_OATH_CLIENT_ID}
+          clientId={process.env.REACT_APP_OATH_CLIENT_ID}
           buttonText="Sign in with Google"
           onSuccess={onSuccess}
           onFailure={onFailure}
