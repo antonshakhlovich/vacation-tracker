@@ -42,7 +42,7 @@ function App(props) {
     if(docHelper.isReady) {
       docHelper.getRowsBySheetName("BalancePublic")
       .then(rows => {
-        setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? {balance: "No Data"})
+        setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? states.noData)
       })
     } else {
       await docHelper.init();
@@ -87,6 +87,9 @@ function App(props) {
           <p>
             <span className="App-label">Vac Used Last Year:</span>
             <span className="App-value">{vac.vacLastYear}</span>
+          </p>
+          <p>
+            <a href={process.env.REACT_APP_FORM_LINK} target="_blank" rel="noreferrer" className="App-button">Submit New Request</a>
           </p>
           <GoogleLogout clientId={process.env.REACT_APP_OATH_CLIENT_ID} buttonText="Log out" onLogoutSuccess={logOut} />
       </div>
