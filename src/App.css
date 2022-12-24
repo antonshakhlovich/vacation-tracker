@@ -42,11 +42,22 @@ span.App-label {
   color: gray;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+
+@media only screen and (max-width: 768px) {
+  .App-header {
+    align-items: left;
+    font-size: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .App-header p{
+    margin: 5px 0px;
+    display: flex;
+  }
+  .App-value {
+    display: block;
+    margin: 10px;
+  }
+  .App-button {
+    padding: 10px;
   }
 }
