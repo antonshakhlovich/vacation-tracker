@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/vacation-tracker/static/css/main.d6c32955.chunk.css",
+    "main.css": "/vacation-tracker/static/css/main.6f496e41.chunk.css",
     "main.js": "/vacation-tracker/static/js/main.339a95ea.chunk.js",
     "runtime-main.js": "/vacation-tracker/static/js/runtime-main.a18f6a28.js",
     "static/js/2.8abc027b.chunk.js": "/vacation-tracker/static/js/2.8abc027b.chunk.js",
@@ -12,7 +12,7 @@
   "entrypoints": [
     "static/js/runtime-main.a18f6a28.js",
     "static/js/2.8abc027b.chunk.js",
-    "static/css/main.d6c32955.chunk.css",
+    "static/css/main.6f496e41.chunk.css",
     "static/js/main.339a95ea.chunk.js"
   ]
 }
