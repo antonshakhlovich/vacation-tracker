@@ -36,6 +36,7 @@ function App(props) {
     setProfile(res.profileObj);
     setVac(states.loading);
     updateBalance(res);
+    //console.log(res.tokenId);
   };
 
   const updateBalance = async (res) => {
@@ -48,6 +49,13 @@ function App(props) {
       await docHelper.init();
       updateBalance(res);
     }
+  }
+
+  const updateBalanceV2 = (tokenId) => {
+    const url = 'http://localhost:8080?id_token=' + tokenId;
+    fetch(url)
+    .then(response => response.json())
+    .then(data => console.log(data));
   }
 
   const onFailure = (err) => {
