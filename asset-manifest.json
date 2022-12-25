@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/vacation-tracker/static/css/main.6f496e41.chunk.css",
-    "main.js": "/vacation-tracker/static/js/main.339a95ea.chunk.js",
-    "runtime-main.js": "/vacation-tracker/static/js/runtime-main.a18f6a28.js",
-    "static/js/2.8abc027b.chunk.js": "/vacation-tracker/static/js/2.8abc027b.chunk.js",
-    "static/js/3.5601f7aa.chunk.js": "/vacation-tracker/static/js/3.5601f7aa.chunk.js",
+    "main.js": "/vacation-tracker/static/js/main.d1196631.chunk.js",
+    "runtime-main.js": "/vacation-tracker/static/js/runtime-main.61fa9649.js",
+    "static/js/2.882ec592.chunk.js": "/vacation-tracker/static/js/2.882ec592.chunk.js",
+    "static/js/3.d46def62.chunk.js": "/vacation-tracker/static/js/3.d46def62.chunk.js",
     "index.html": "/vacation-tracker/index.html",
-    "static/js/2.8abc027b.chunk.js.LICENSE.txt": "/vacation-tracker/static/js/2.8abc027b.chunk.js.LICENSE.txt",
+    "static/js/2.882ec592.chunk.js.LICENSE.txt": "/vacation-tracker/static/js/2.882ec592.chunk.js.LICENSE.txt",
     "static/media/logo-white.d7f37808.svg": "/vacation-tracker/static/media/logo-white.d7f37808.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.a18f6a28.js",
-    "static/js/2.8abc027b.chunk.js",
+    "static/js/runtime-main.61fa9649.js",
+    "static/js/2.882ec592.chunk.js",
     "static/css/main.6f496e41.chunk.css",
-    "static/js/main.339a95ea.chunk.js"
+    "static/js/main.d1196631.chunk.js"
   ]
 }
