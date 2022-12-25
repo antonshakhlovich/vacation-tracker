@@ -1,12 +1,11 @@
 {
   "name": "vacation-tracker",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "homepage": "https://antonshakhlovich.github.io/vacation-tracker",
   "dependencies": {
+    "@headlessui/react": "^1.7.7",
     "gapi-script": "^1.2.0",
-    "google-spreadsheet": "^3.3.0",
-    "md5": "^2.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
@@ -14,8 +13,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
