@@ -3,24 +3,22 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { gapi } from 'gapi-script';
 import {useState, useEffect} from 'react';
 import logo from './logo-white.svg';
-import DocHelper from './util/DocHelper';
 
-function App(props) {
+function App() {
   const states = {
     loading: {
-      balance: "Loading..."
+      vacationBalance: "Loading..."
     },
     noData: {
-      balance: "No data."
+      vacationBalance: "No data."
     },
     failed: {
-      balance: "Failed to retrieve data."
+      vacationBalance: "Failed to retrieve data."
     }
   }
 
   const [vac, setVac] = useState(states.loading);
   const [profile, setProfile] = useState(null);
-  const docHelper = new DocHelper();
 
   useEffect(() => {
     const initClient = () => {
@@ -32,31 +30,21 @@ function App(props) {
     gapi.load('client:auth2', initClient);
   }, [])
 
+  const getUserData = (tokenId) => {
+    const url = 'https://user-data-vzzdzjkoiq-lm.a.run.app?id_token=' + tokenId;
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const balance = data.find(x => x.name === "balance").values[0];
+      setVac(balance);
+    });
+  };
+
   const onSuccess = (res) => {
     setProfile(res.profileObj);
     setVac(states.loading);
-    updateBalance(res);
-    //console.log(res.tokenId);
+    getUserData(res.tokenId);
   };
-
-  const updateBalance = async (res) => {
-    if(docHelper.isReady) {
-      docHelper.getRowsBySheetName("BalancePublic")
-      .then(rows => {
-        setVac(rows.find(x => docHelper.getUserByMd5(x.md5).email === res.profileObj.email) ?? states.noData)
-      })
-    } else {
-      await docHelper.init();
-      updateBalance(res);
-    }
-  }
-
-  const updateBalanceV2 = (tokenId) => {
-    const url = 'http://localhost:8080?id_token=' + tokenId;
-    fetch(url)
-    .then(response => response.json())
-    .then(data => console.log(data));
-  }
 
   const onFailure = (err) => {
       console.log('failed', err);
@@ -86,15 +74,15 @@ function App(props) {
           </p>
           <p>
             <span className="App-label">Balance:</span>
-            <span className="App-value">{vac.balance}</span>
+            <span className="App-value">{vac.vacationBalance}</span>
           </p>
           <p>
             <span className="App-label">Sick Leaves Used Last Year:</span>
-            <span className="App-value">{vac.sickLastYear}</span>
+            <span className="App-value">{vac.sickDaysUsedLastYear}</span>
           </p>
           <p>
             <span className="App-label">Vac Used Last Year:</span>
-            <span className="App-value">{vac.vacLastYear}</span>
+            <span className="App-value">{vac.vacationUsedLastYear}</span>
           </p>
           <p>
             <a href={process.env.REACT_APP_FORM_LINK} target="_blank" rel="noreferrer" className="App-button">Submit New Request</a>

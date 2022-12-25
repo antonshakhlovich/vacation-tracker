@@ -1,15 +1,27 @@
-const { google, indexing_v3 } = require('googleapis');
-const { promisify, transferableAbortController } = require('util');
+const { google } = require('googleapis');
+const { promisify } = require('util');
 const functions = require('@google-cloud/functions-framework');
 
 // env variables
-const environment = process.env.NODE_ENV || 'development';
+const environment = process.env.ENV || 'development';
 if(environment === 'development') {
     require('dotenv').config();
 }
 
 // Main Function
 functions.http('userData', (req, res) => {
+    // CORS enable
+    res.set('Access-Control-Allow-Origin', '*');
+
+    if (req.method === 'OPTIONS') {
+        // Send response to OPTIONS requests
+        res.set('Access-Control-Allow-Methods', 'GET');
+        res.set('Access-Control-Allow-Headers', 'Content-Type');
+        res.set('Access-Control-Max-Age', '3600');
+        res.status(204).send('');
+        return;
+    }
+
     getClient()
     .then(client => getUserEmailbyToken(client, req.query.id_token))
     .then(async data => {
