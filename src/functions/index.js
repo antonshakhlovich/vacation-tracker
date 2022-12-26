@@ -23,7 +23,7 @@ functions.http('userData', (req, res) => {
     }
 
     getClient()
-    .then(client => getUserEmailbyToken(client, req.query.id_token))
+    .then(client => getUserEmailbyToken(client, req.body.id_token || req.query.id_token))
     .then(async data => {
         const api = google.sheets({ version: 'v4', auth: data.client });
         const getValues = promisify(api.spreadsheets.values.batchGet.bind(api.spreadsheets.values));
@@ -83,8 +83,8 @@ const tabs = [
     {
         name: 'balance',
         sheetName: 'BalanceConfidential',
-        rangeStart: 'A2',
-        rangeEnd: 'I99',
+        rangeStart: 'A',
+        rangeEnd: 'I',
         fields: [
             "name",
             "project",
