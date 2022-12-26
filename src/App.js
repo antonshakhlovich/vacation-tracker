@@ -3,7 +3,6 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { gapi } from 'gapi-script';
 import React, { useState, useEffect } from 'react';
 import logo from './logo-white.svg';
-import { Tab } from '@headlessui/react';
 
 function App() {
   const states = {
