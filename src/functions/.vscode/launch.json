@@ -7,7 +7,7 @@
       "functionName": "user-data",
       "region": "europe-central2",
       "gen": "GEN_2",
-      "revision": "user-data-00013-soc",
+      "revision": "user-data-00015-kez",
       "entryPoint": "userData",
       "runtime": "nodejs16",
       "testInput": ""
