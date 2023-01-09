@@ -9,35 +9,62 @@ if (environment === 'development') {
 }
 
 // Main Function
-functions.http('userData', (req, res) => {
-  // CORS enable
-  res.set('Access-Control-Allow-Origin', '*');
+functions.http('userData', async (req, res) => {
+  if (!enableCORS(req, res)) return;
 
-  if (req.method === 'OPTIONS') {
-    // Send response to OPTIONS requests
-    res.set('Access-Control-Allow-Methods', 'GET');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
-    res.status(204).send('');
-    return;
+  try {
+    const client = await getClient();
+    const [ranges, email] = await Promise.all([
+      getRanges(client),
+      getUserEmailbyToken(client, req.body.id_token || req.query.id_token),
+    ]);
+    res.status(200).send(getMappedAndFilteredValues(ranges, email));
+  } catch (error) {
+    res.status(500).send(error.message ?? 'something went wrong');
   }
-
-  getClient()
-    .then((client) => getUserEmailbyToken(client, req.body.id_token || req.query.id_token))
-    .then(async (data) => {
-      const api = google.sheets({ version: 'v4', auth: data.client });
-      const getValues = promisify(api.spreadsheets.values.batchGet.bind(api.spreadsheets.values));
-      const values = await getValues({ spreadsheetId: process.env.GOOGLE_SHEET_ID, ranges });
-      values.data.valueRanges.forEach((range) => {
-        range.values = range.values.filter((x) => x.some((x) => x === data.email));
-      });
-      return values.data.valueRanges;
-    })
-    .then((values) => res.status(200).send(mapValues(values)))
-    .catch((err) => res.status(500).send(err.message ?? 'something went wrong'));
 });
 
-const mapValues = (values) =>
+const getRanges = async (client) => {
+  const api = google.sheets({ version: 'v4', auth: client });
+  const getValues = promisify(api.spreadsheets.values.batchGet.bind(api.spreadsheets.values));
+  const values = await getValues({ spreadsheetId: process.env.GOOGLE_SHEET_ID, ranges });
+  return values.data.valueRanges;
+};
+
+const getMappedAndFilteredValues = (rawRanges, email) => {
+  const ranges = mapRanges(rawRanges);
+  const personalBalance = ranges
+    .find((x) => x.name === 'balance')
+    .values.filter((x) => x.email === email)[0];
+  const project = personalBalance.project;
+  const requests = ranges.find((x) => x.name === 'requests').values;
+  const personalRequests = requests.filter((x) => x.email === email);
+  const today = new Date();
+  const yearFromToday = new Date();
+  yearFromToday.setFullYear(today.getFullYear() + 1);
+  const teamRequests = requests.filter(
+    (x) =>
+      x.project === project &&
+      x.email !== email &&
+      new Date(x.endDate).getTime() >= today.getTime(),
+  );
+  const holidays = ranges
+    .find((x) => x.name === 'holidays')
+    .values.filter(
+      (x) =>
+        new Date(x.date).getTime() >= today.getTime() &&
+        new Date(x.date).getTime() <= yearFromToday.getTime(),
+    );
+
+  return {
+    personalBalance,
+    personalRequests,
+    teamRequests,
+    holidays,
+  };
+};
+
+const mapRanges = (values) =>
   values.map((tab, index) => {
     return {
       name: tabs[index].name,
@@ -58,7 +85,7 @@ const getUserEmailbyToken = async (client, token) => {
   const payload = ticket.getPayload();
   const email = payload.email;
   console.log(`${payload.name} requested vacation balance. [${email}]`);
-  return { client, email };
+  return email;
 };
 
 const getClient = async () => {
@@ -78,6 +105,20 @@ const getClient = async () => {
     });
   }
   return google.auth.getClient(params);
+};
+
+const enableCORS = (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+
+  if (req.method === 'OPTIONS') {
+    // Send response to OPTIONS requests
+    res.set('Access-Control-Allow-Methods', 'GET');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.set('Access-Control-Max-Age', '3600');
+    res.status(204).send('');
+    return false;
+  }
+  return true;
 };
 
 //Spreadsheet settings
@@ -105,6 +146,13 @@ const tabs = [
     rangeStart: 'A',
     rangeEnd: 'H',
     fields: ['timestamp', 'email', 'type', 'project', 'startDate', 'endDate', 'length', 'comment'],
+  },
+  {
+    name: 'holidays',
+    sheetName: 'Holidays',
+    rangeStart: 'A',
+    rangeEnd: 'C',
+    fields: ['date', 'name', 'weekday'],
   },
 ];
 
