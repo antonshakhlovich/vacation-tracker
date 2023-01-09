@@ -31,13 +31,17 @@ function App() {
   }, []);
 
   const getUserData = (tokenId) => {
-    const url = 'https://user-data-vzzdzjkoiq-lm.a.run.app?id_token=' + tokenId;
-    fetch(url)
+    fetch(getUserDataUrl(tokenId))
       .then((response) => response.json())
-      .then((data) => {
-        const balance = data.find((x) => x.name === 'balance').values[0];
-        setVac(balance);
-      });
+      .then((data) => setVac(data.personalBalance));
+  };
+
+  const getUserDataUrl = (tokenId) => {
+    let baseUrl = 'https://user-data-vzzdzjkoiq-lm.a.run.app';
+    if (process.env.NODE_ENV === 'development') {
+      baseUrl = 'http://localhost:8080';
+    }
+    return `${baseUrl}?id_token=${tokenId}`;
   };
 
   const onSuccess = (res) => {

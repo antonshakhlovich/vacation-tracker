@@ -48,6 +48,11 @@ const getMappedAndFilteredValues = (rawRanges, email) => {
       x.email !== email &&
       new Date(x.endDate).getTime() >= today.getTime(),
   );
+  teamRequests.forEach((x) => {
+    const match = x.email.match(/^(\w+)\.(\w+)@/);
+    x.firstName = match[1].substring(0, 1).toUpperCase() + match[1].slice(1);
+    x.lastName = match[2].substring(0, 1).toUpperCase() + match[2].slice(1);
+  });
   const holidays = ranges
     .find((x) => x.name === 'holidays')
     .values.filter(
