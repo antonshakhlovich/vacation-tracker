@@ -40,8 +40,6 @@ const getMappedAndFilteredValues = (rawRanges, email) => {
   const requests = ranges.find((x) => x.name === 'requests').values;
   const personalRequests = requests.filter((x) => x.email === email);
   const today = new Date();
-  const yearFromToday = new Date();
-  yearFromToday.setFullYear(today.getFullYear() + 1);
   const teamRequests = requests.filter(
     (x) =>
       x.project === project &&
@@ -53,6 +51,8 @@ const getMappedAndFilteredValues = (rawRanges, email) => {
     x.firstName = match[1].substring(0, 1).toUpperCase() + match[1].slice(1);
     x.lastName = match[2].substring(0, 1).toUpperCase() + match[2].slice(1);
   });
+  const yearFromToday = new Date();
+  yearFromToday.setFullYear(today.getFullYear() + 1);
   const holidays = ranges
     .find((x) => x.name === 'holidays')
     .values.filter(

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function History() {
-  return;
-  <div></div>;
+  return <div> History </div>;
 }
 
 export default History;

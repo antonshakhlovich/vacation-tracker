@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function Team() {
-  return;
-  <div></div>;
+  return <div>Team</div>;
 }
 
 export default Team;
