@@ -22,6 +22,20 @@ functions.http('userData', async (req, res) => {
   } catch (error) {
     res.status(500).send(error.message ?? 'something went wrong');
   }
+
+  getClient()
+    .then((client) => getUserEmailbyToken(client, req.body.id_token || req.query.id_token))
+    .then(async (data) => {
+      const api = google.sheets({ version: 'v4', auth: data.client });
+      const getValues = promisify(api.spreadsheets.values.batchGet.bind(api.spreadsheets.values));
+      const values = await getValues({ spreadsheetId: process.env.GOOGLE_SHEET_ID, ranges });
+      values.data.valueRanges.forEach((range) => {
+        range.values = range.values.filter((x) => x.some((x) => x === data.payload.email));
+      });
+      return values.data.valueRanges;
+    })
+    .then((values) => res.status(200).send(mapValues(values)))
+    .catch((err) => res.status(500).send(err.message ?? 'something went wrong'));
 });
 
 const getRanges = async (client) => {
@@ -90,7 +104,7 @@ const getUserEmailbyToken = async (client, token) => {
   const payload = ticket.getPayload();
   const email = payload.email;
   console.log(`${payload.name} requested vacation balance. [${email}]`);
-  return email;
+  return { client, payload };
 };
 
 const getClient = async () => {

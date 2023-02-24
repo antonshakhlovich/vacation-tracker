@@ -1,6 +1,5 @@
 import './App.css';
-import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import { gapi } from 'gapi-script';
+import { GoogleLogin } from '@react-oauth/google';
 import React, { useState, useEffect } from 'react';
 import logo from './logo-white.svg';
 
@@ -20,15 +19,7 @@ function App() {
   const [vac, setVac] = useState(states.loading);
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    const initClient = () => {
-      gapi.auth2.init({
-        clientId: process.env.REACT_APP_OATH_CLIENT_ID,
-        scope: 'email',
-      });
-    };
-    gapi.load('auth2', initClient);
-  }, []);
+  useEffect(() => {}, []);
 
   const getUserData = (tokenId) => {
     fetch(getUserDataUrl(tokenId))
@@ -47,12 +38,13 @@ function App() {
   const onSuccess = (res) => {
     setProfile(res.profileObj);
     setVac(states.loading);
-    getUserData(res.tokenId);
+    getUserData(res.credential);
   };
 
   const onFailure = (err) => {
     console.log('failed', err);
     setVac(states.failed);
+    logOut();
   };
 
   const logOut = () => {
@@ -98,11 +90,6 @@ function App() {
                 Submit New Request
               </a>
             </p>
-            <GoogleLogout
-              clientId={process.env.REACT_APP_OATH_CLIENT_ID}
-              buttonText='Log out'
-              onLogoutSuccess={logOut}
-            />
           </div>
         ) : (
           <GoogleLogin
