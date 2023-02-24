@@ -27,7 +27,7 @@ function App() {
         scope: 'email',
       });
     };
-    gapi.load('client:auth2', initClient);
+    gapi.load('auth2', initClient);
   }, []);
 
   const getUserData = (tokenId) => {
