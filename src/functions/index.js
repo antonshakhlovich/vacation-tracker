@@ -14,28 +14,14 @@ functions.http('userData', async (req, res) => {
 
   try {
     const client = await getClient();
-    const [ranges, email] = await Promise.all([
+    const [ranges, payload] = await Promise.all([
       getRanges(client),
-      getUserEmailbyToken(client, req.body.id_token || req.query.id_token),
+      getPayloadByToken(client, req.body.id_token || req.query.id_token),
     ]);
-    res.status(200).send(getMappedAndFilteredValues(ranges, email));
+    res.status(200).send(getMappedAndFilteredValues(ranges, payload));
   } catch (error) {
     res.status(500).send(error.message ?? 'something went wrong');
   }
-
-  getClient()
-    .then((client) => getUserEmailbyToken(client, req.body.id_token || req.query.id_token))
-    .then(async (data) => {
-      const api = google.sheets({ version: 'v4', auth: data.client });
-      const getValues = promisify(api.spreadsheets.values.batchGet.bind(api.spreadsheets.values));
-      const values = await getValues({ spreadsheetId: process.env.GOOGLE_SHEET_ID, ranges });
-      values.data.valueRanges.forEach((range) => {
-        range.values = range.values.filter((x) => x.some((x) => x === data.payload.email));
-      });
-      return values.data.valueRanges;
-    })
-    .then((values) => res.status(200).send(mapValues(values)))
-    .catch((err) => res.status(500).send(err.message ?? 'something went wrong'));
 });
 
 const getRanges = async (client) => {
@@ -45,21 +31,21 @@ const getRanges = async (client) => {
   return values.data.valueRanges;
 };
 
-const getMappedAndFilteredValues = (rawRanges, email) => {
+const getMappedAndFilteredValues = (rawRanges, payload) => {
   const ranges = mapRanges(rawRanges);
   const personalBalance = ranges
     .find((x) => x.name === 'balance')
-    .values.filter((x) => x.email === email)[0];
+    .values.filter((x) => x.email === payload.email)[0];
   const project = personalBalance.project;
   const requests = ranges.find((x) => x.name === 'requests').values;
-  const personalRequests = requests.filter((x) => x.email === email);
+  const personalRequests = requests.filter((x) => x.email === payload.email);
   const today = new Date();
   const yearFromToday = new Date();
   yearFromToday.setFullYear(today.getFullYear() + 1);
   const teamRequests = requests.filter(
     (x) =>
       x.project === project &&
-      x.email !== email &&
+      x.email !== payload.email &&
       new Date(x.endDate).getTime() >= today.getTime(),
   );
   teamRequests.forEach((x) => {
@@ -96,7 +82,7 @@ const mapRanges = (values) =>
   });
 
 // Helper Functions
-const getUserEmailbyToken = async (client, token) => {
+const getPayloadByToken = async (client, token) => {
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: client.id,
@@ -104,7 +90,7 @@ const getUserEmailbyToken = async (client, token) => {
   const payload = ticket.getPayload();
   const email = payload.email;
   console.log(`${payload.name} requested vacation balance. [${email}]`);
-  return { client, payload };
+  return payload;
 };
 
 const getClient = async () => {

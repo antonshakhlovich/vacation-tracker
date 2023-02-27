@@ -1,30 +1,29 @@
 import './App.css';
 import { GoogleLogin } from '@react-oauth/google';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import logo from './logo-white.svg';
 
 function App() {
-  const states = {
+  const userStates = {
     loading: {
-      vacationBalance: 'Loading...',
+      name: 'Loading...',
     },
     noData: {
-      vacationBalance: 'No data.',
+      name: 'No data.',
     },
     failed: {
-      vacationBalance: 'Failed to retrieve data.',
+      name: 'Failed to retrieve data.',
     },
   };
 
-  const [vac, setVac] = useState(states.loading);
-  const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {}, []);
 
   const getUserData = (tokenId) => {
     fetch(getUserDataUrl(tokenId))
       .then((response) => response.json())
-      .then((data) => setVac(data.personalBalance));
+      .then((data) => setUser(data.personalBalance));
   };
 
   const getUserDataUrl = (tokenId) => {
@@ -36,20 +35,18 @@ function App() {
   };
 
   const onSuccess = (res) => {
-    setProfile(res.profileObj);
-    setVac(states.loading);
+    setUser(userStates.loading);
     getUserData(res.credential);
   };
 
   const onFailure = (err) => {
     console.log('failed', err);
-    setVac(states.failed);
+    setUser(userStates.failed);
     logOut();
   };
 
   const logOut = () => {
-    setProfile(null);
-    setVac(states.loading);
+    setUser(null);
   };
 
   return (
@@ -58,49 +55,47 @@ function App() {
         <img className='App-logo' src={logo} alt='SiliconMint' />
       </div>
       <header className='App-header'>
-        {profile ? (
-          <div>
-            <p>
-              <span className='App-label'>Name:</span>
-              <span className='App-value'>{profile.name}</span>
-            </p>
-            <p>
-              <span className='App-label'>Email:</span>
-              <span className='App-value'>{profile.email}</span>
-            </p>
-            <p>
-              <span className='App-label'>Balance:</span>
-              <span className='App-value'>{vac.vacationBalance}</span>
-            </p>
-            <p>
-              <span className='App-label'>Sick Leaves Used Last Year:</span>
-              <span className='App-value'>{vac.sickDaysUsedLastYear}</span>
-            </p>
-            <p>
-              <span className='App-label'>Vac Used Last Year:</span>
-              <span className='App-value'>{vac.vacationUsedLastYear}</span>
-            </p>
-            <p>
-              <a
-                href={process.env.REACT_APP_FORM_LINK}
-                target='_blank'
-                rel='noreferrer'
-                className='App-button'
-              >
-                Submit New Request
-              </a>
-            </p>
-          </div>
-        ) : (
-          <GoogleLogin
-            clientId={process.env.REACT_APP_OATH_CLIENT_ID}
-            buttonText='Sign in with Google'
-            onSuccess={onSuccess}
-            onFailure={onFailure}
-            cookiePolicy={'single_host_origin'}
-            isSignedIn={true}
-          />
-        )}
+        <div>
+          {user ? (
+            <Fragment>
+              <p>
+                <span className='App-label'>Name:</span>
+                <span className='App-value'>{user.name}</span>
+              </p>
+              <p>
+                <span className='App-label'>Email:</span>
+                <span className='App-value'>{user.email}</span>
+              </p>
+              <p>
+                <span className='App-label'>Balance:</span>
+                <span className='App-value'>{user.vacationBalance}</span>
+              </p>
+              <p>
+                <span className='App-label'>Sick Leaves Used Last Year:</span>
+                <span className='App-value'>{user.sickDaysUsedLastYear}</span>
+              </p>
+              <p>
+                <span className='App-label'>Vac Used Last Year:</span>
+                <span className='App-value'>{user.vacationUsedLastYear}</span>
+              </p>
+              <p>
+                <a
+                  href={process.env.REACT_APP_FORM_LINK}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='App-button'
+                >
+                  Submit New Request
+                </a>
+              </p>
+              <button className='App-button App-button--reversed' onClick={logOut}>
+                Log Out
+              </button>
+            </Fragment>
+          ) : (
+            <GoogleLogin onSuccess={onSuccess} onFailure={onFailure} useOneTap />
+          )}
+        </div>
       </header>
     </div>
   );

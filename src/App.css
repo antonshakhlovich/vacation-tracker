@@ -17,7 +17,7 @@ div.App-logo {
   position: relative;
 }
 
-img.App-logo{
+img.App-logo {
   position: absolute;
   left: 20px;
   top: 20px;
@@ -32,8 +32,14 @@ img.App-logo{
   border-radius: 5px;
 }
 
+.App-button--reversed {
+  background-color: #ffffff;
+  color: #424242;
+}
+
 .App-button:hover {
   background-color: #848484;
+  cursor: pointer;
 }
 
 span.App-label {
@@ -42,14 +48,13 @@ span.App-label {
   color: gray;
 }
 
-
 @media only screen and (max-width: 768px) {
   .App-header {
     align-items: left;
     font-size: 1rem;
   }
 
-  .App-header p{
+  .App-header p {
     margin: 5px 0px;
     display: flex;
   }
