@@ -1,18 +1,20 @@
 {
   "files": {
-    "main.css": "/vacation-tracker/static/css/main.cf994433.chunk.css",
-    "main.js": "/vacation-tracker/static/js/main.f763f29d.chunk.js",
-    "runtime-main.js": "/vacation-tracker/static/js/runtime-main.a360b649.js",
-    "static/js/2.41410325.chunk.js": "/vacation-tracker/static/js/2.41410325.chunk.js",
-    "static/js/3.989882ce.chunk.js": "/vacation-tracker/static/js/3.989882ce.chunk.js",
+    "main.css": "/vacation-tracker/static/css/main.fccf6cfb.chunk.css",
+    "main.js": "/vacation-tracker/static/js/main.064b4f15.chunk.js",
+    "runtime-main.js": "/vacation-tracker/static/js/runtime-main.11d9d66f.js",
+    "static/css/2.7646e7c4.chunk.css": "/vacation-tracker/static/css/2.7646e7c4.chunk.css",
+    "static/js/2.a1e6c23d.chunk.js": "/vacation-tracker/static/js/2.a1e6c23d.chunk.js",
+    "static/js/3.43d735b8.chunk.js": "/vacation-tracker/static/js/3.43d735b8.chunk.js",
     "index.html": "/vacation-tracker/index.html",
-    "static/js/2.41410325.chunk.js.LICENSE.txt": "/vacation-tracker/static/js/2.41410325.chunk.js.LICENSE.txt",
+    "static/js/2.a1e6c23d.chunk.js.LICENSE.txt": "/vacation-tracker/static/js/2.a1e6c23d.chunk.js.LICENSE.txt",
     "static/media/logo-white.d7f37808.svg": "/vacation-tracker/static/media/logo-white.d7f37808.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.a360b649.js",
-    "static/js/2.41410325.chunk.js",
-    "static/css/main.cf994433.chunk.css",
-    "static/js/main.f763f29d.chunk.js"
+    "static/js/runtime-main.11d9d66f.js",
+    "static/css/2.7646e7c4.chunk.css",
+    "static/js/2.a1e6c23d.chunk.js",
+    "static/css/main.fccf6cfb.chunk.css",
+    "static/js/main.064b4f15.chunk.js"
   ]
 }
