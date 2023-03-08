@@ -32,6 +32,14 @@ img.App-logo {
   border-radius: 5px;
 }
 
+.App-header div.row {
+  display: flex;
+}
+.App-value {
+  display: block;
+  margin: 10px;
+}
+
 .App-button--reversed {
   background-color: #ffffff;
   color: #424242;
@@ -46,6 +54,24 @@ span.App-label {
   margin: 10px;
   font-size: 1rem;
   color: gray;
+  line-height: 40px;
+}
+
+div.react-datepicker-wrapper {
+  width: auto;
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+div.react-datepicker-wrapper input {
+  width: 100px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+div.react-datepicker-wrapper div {
+  height: 100%;
 }
 
 @media only screen and (max-width: 768px) {
@@ -54,15 +80,15 @@ span.App-label {
     font-size: 1rem;
   }
 
-  .App-header p {
-    margin: 5px 0px;
-    display: flex;
-  }
-  .App-value {
-    display: block;
-    margin: 10px;
-  }
   .App-button {
     padding: 10px;
+  }
+
+  div.react-datepicker-wrapper {
+    margin: 10px 0;
+  }
+
+  span.App-label {
+    line-height: normal;
   }
 }

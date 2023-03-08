@@ -1,6 +1,8 @@
 import './App.css';
 import { GoogleLogin } from '@react-oauth/google';
+import DatePicker from 'react-datepicker';
 import React, { useState, useEffect, Fragment } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
 import logo from './logo-white.svg';
 
 function App() {
@@ -16,7 +18,11 @@ function App() {
     },
   };
 
+  const NOT_APPLICABLE = 'N/A';
+
   const [user, setUser] = useState(null);
+  const [date, setDate] = useState(null);
+  const [balanceOnDate, setBalanceOnDate] = useState(NOT_APPLICABLE);
 
   useEffect(() => {}, []);
 
@@ -27,8 +33,10 @@ function App() {
   };
 
   const getUserDataUrl = (tokenId) => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const isLocal = !!queryParams?.get('local');
     let baseUrl = 'https://user-data-vzzdzjkoiq-lm.a.run.app';
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && isLocal) {
       baseUrl = 'http://localhost:8080';
     }
     return `${baseUrl}?id_token=${tokenId}`;
@@ -47,6 +55,25 @@ function App() {
 
   const logOut = () => {
     setUser(null);
+    setBalanceOnDate(NOT_APPLICABLE);
+  };
+
+  const onDateChanged = (date) => {
+    setDate(date);
+
+    if (date <= new Date()) {
+      setBalanceOnDate(NOT_APPLICABLE);
+      return;
+    }
+
+    const balance = Math.round(
+      ((new Date(date).getTime() - new Date(user.startDate).getTime()) / (1000 * 3600 * 24) / 365) *
+        20 -
+        user.vacationUsedTotal,
+      0,
+    );
+
+    setBalanceOnDate(balance);
   };
 
   return (
@@ -58,26 +85,31 @@ function App() {
         <div>
           {user ? (
             <Fragment>
-              <p>
+              <div className='row'>
                 <span className='App-label'>Name:</span>
                 <span className='App-value'>{user.name}</span>
-              </p>
-              <p>
+              </div>
+              <div className='row'>
                 <span className='App-label'>Email:</span>
                 <span className='App-value'>{user.email}</span>
-              </p>
-              <p>
+              </div>
+              <div className='row'>
                 <span className='App-label'>Balance:</span>
                 <span className='App-value'>{user.vacationBalance}</span>
-              </p>
-              <p>
+              </div>
+              <div className='row'>
+                <span className='App-label'>Balance On Date:</span>
+                <DatePicker selected={date} onChange={onDateChanged}></DatePicker>
+                <span className='App-value'>{balanceOnDate}</span>
+              </div>
+              <div className='row'>
                 <span className='App-label'>Sick Leaves Used Last Year:</span>
                 <span className='App-value'>{user.sickDaysUsedLastYear}</span>
-              </p>
-              <p>
+              </div>
+              <div className='row'>
                 <span className='App-label'>Vac Used Last Year:</span>
                 <span className='App-value'>{user.vacationUsedLastYear}</span>
-              </p>
+              </div>
               <p>
                 <a
                   href={process.env.REACT_APP_FORM_LINK}
